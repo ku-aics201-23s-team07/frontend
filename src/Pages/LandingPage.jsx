@@ -1,16 +1,19 @@
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import TabHeader from "../Components/TabHeader";
+import Sidebar from "../Components/Sidebar";
 
 export default function LandingPage() {
   return (
     <Box sx={{ ...styles.wrapper, ...styles.centerize }}>
-      <Box sx={styles.container}>
+      <Box className={"glassmorphism"} sx={styles.container}>
+        {/* <Box sx={styles.container}> */}
         <TabHeader
           title={
             "7조 : Kickboard Searching & Recommending Service Using AVP Tree"
           }
         />
+        <Sidebar />
       </Box>
     </Box>
   );
@@ -30,8 +33,6 @@ const styles = {
   container: {
     width: "80%",
     height: "80%",
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 5,
     overflow: "hidden",
   },
 };
