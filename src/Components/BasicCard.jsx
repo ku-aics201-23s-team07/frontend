@@ -25,6 +25,7 @@ export default function BasicCard({
   title = "",
   adjective = "",
   description = "",
+  destination = "",
 }) {
   const navigate = useNavigate();
   const [newTitle, setNewTitle] = useState([]);
@@ -32,7 +33,7 @@ export default function BasicCard({
     setNewTitle(title.split(" "));
   }, []);
   return (
-    <Card sx={{ width, height, margin: 1 }}>
+    <Card sx={{ width, height, mb: 2 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
           {prefix}
@@ -59,7 +60,7 @@ export default function BasicCard({
         <Button
           size="small"
           onClick={() => {
-            navigate("/");
+            navigate(destination);
           }}
         >
           Test it 👉
