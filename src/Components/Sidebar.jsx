@@ -46,7 +46,7 @@ const styles = {
   sidebarWrapper: {
     width: "20%",
     height: "calc(100% - 56px)",
-    borderRight: "1px solid gray",
+    borderRight: "2px solid crimson",
 
     flexWrap: "wrap",
     overflow: "scroll",
