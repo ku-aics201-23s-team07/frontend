@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TabHeader({ title }) {
   const [openA, setOpenA] = useState(false);
@@ -18,26 +18,34 @@ export default function TabHeader({ title }) {
 
   return (
     <Box sx={styles.headerWrapper}>
-      <Link sx={styles.tabButton} onClick={handleOpenA} />
-      <Modal
-        open={openA}
-        onClose={handleCloseA}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        <Box sx={styles.modal}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Team Members
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            7조 팀 소개가 들어갈 자리입니다
-          </Typography>
-        </Box>
-      </Modal>
-      <Link
-        sx={{ ...styles.tabButton, backgroundColor: "rgb(255, 188, 46)" }}
-        onClick={handleOpenB}
-      >
+        <Link sx={styles.tabButton} onClick={handleOpenA} />
+        <Modal
+          open={openA}
+          onClose={handleCloseA}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={styles.modal}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Team Members
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              7조 팀 소개가 들어갈 자리입니다
+            </Typography>
+          </Box>
+        </Modal>
+        <Link
+          sx={{ ...styles.tabButton, backgroundColor: "rgb(255, 188, 46)" }}
+          onClick={handleOpenB}
+        />
         <Modal
           open={openB}
           onClose={handleCloseB}
@@ -53,11 +61,10 @@ export default function TabHeader({ title }) {
             </Typography>
           </Box>
         </Modal>
-      </Link>
-      <Link
-        sx={{ ...styles.tabButton, backgroundColor: "rgb(42, 202, 65)" }}
-        onClick={handleOpenC}
-      >
+        <Link
+          sx={{ ...styles.tabButton, backgroundColor: "rgb(42, 202, 65)" }}
+          onClick={handleOpenC}
+        />
         <Modal
           open={openC}
           onClose={handleCloseC}
@@ -73,8 +80,8 @@ export default function TabHeader({ title }) {
             </Typography>
           </Box>
         </Modal>
-      </Link>
-      <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
         <Typography sx={{ color: "#FFF", fontWeight: "bold" }}>
           {title}
         </Typography>
