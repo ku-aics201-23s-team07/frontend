@@ -2,7 +2,9 @@ import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import TabHeader from "../Components/TabHeader";
 import Sidebar from "../Components/Sidebar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+const { kakao } = window;
 
 export default function LandingPage() {
   const [items, setItems] = useState([]);
@@ -29,6 +31,17 @@ export default function LandingPage() {
     ]);
   }, []);
 
+  useEffect(() => {
+    var container = document.getElementById("map"); //지도를 담을 영역의 DOM 레퍼런스
+    var options = {
+      //지도를 생성할 때 필요한 기본 옵션
+      center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
+      level: 3, //지도의 레벨(확대, 축소 정도)
+    };
+
+    var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+  }, []);
+
   return (
     <Box sx={{ ...styles.wrapper, ...styles.centerize }}>
       <Box className={"glassmorphism"} sx={styles.container}>
@@ -38,7 +51,28 @@ export default function LandingPage() {
             "7조 : Kickboard Searching & Recommending Service Using AVP Tree"
           }
         />
-        <Sidebar items={items} />
+        <Box sx={{ width: "100%", display: "flex" }}>
+          <Sidebar items={items} />
+          <Box
+            sx={{
+              width: "80%",
+              height: "calc(100%-40px)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              id="map"
+              style={{
+                width: "80%",
+                height: "80%",
+                backgroundColor: "#777",
+                borderRadius: 3,
+              }}
+            />
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
