@@ -1,13 +1,19 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import TabHeader from "../Components/TabHeader";
 import Sidebar from "../Components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
 
+import * as API from "../api";
+
 const { kakao } = window;
 
 export default function LandingPage() {
   const [items, setItems] = useState([]);
+  const [icon, setIcon] = useState();
+  const [map, setMap] = useState();
+  const [markerList, setMarkerList] = useState([]);
+  const [reloader, reload] = useState(true);
 
   // set sidebar items
   useEffect(() => {
@@ -29,18 +35,55 @@ export default function LandingPage() {
         link: "/update",
       },
     ]);
+    markerLoader();
   }, []);
+
+  const markerLoader = async () => {
+    const res = await API.get("api/location/list");
+    setMarkerList(res.data.message);
+  };
+
+  const mapDrawer = useCallback(() => {
+    var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+      mapOption = {
+        center: new kakao.maps.LatLng(36.6105, 127.287), // 지도의 중심좌표
+        level: 3, // 지도의 확대 레벨
+      };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+    const icon = new kakao.maps.MarkerImage(
+      "/kickboard-blackbg.png",
+      new kakao.maps.Size(33, 47),
+      {
+        offset: new kakao.maps.Point(16, 34),
+        alt: "킥보드",
+        shape: "poly",
+      }
+    );
+
+    setIcon(icon);
+
+    markerList.forEach((group) => {
+      const markerPosition = new kakao.maps.LatLng(
+        group.latitude ?? 33.450701,
+        group.longitude ?? 126.570667
+      );
+
+      //New Marker
+      const newMarker = new kakao.maps.Marker({
+        position: markerPosition,
+        image: icon,
+      });
+
+      //Float the Marker
+      newMarker.setMap(map);
+    });
+  });
 
   useEffect(() => {
-    var container = document.getElementById("map"); //지도를 담을 영역의 DOM 레퍼런스
-    var options = {
-      //지도를 생성할 때 필요한 기본 옵션
-      center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
-      level: 3, //지도의 레벨(확대, 축소 정도)
-    };
-
-    var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
-  }, []);
+    mapDrawer();
+  }, [reload, markerList]);
 
   return (
     <Box sx={{ ...styles.wrapper, ...styles.centerize }}>
@@ -71,6 +114,19 @@ export default function LandingPage() {
                 borderRadius: 3,
               }}
             />
+            <Button
+              sx={{
+                position: "absolute",
+                right: 10,
+                bottom: 10,
+                backgroundColor: "#000",
+              }}
+              onClick={() => {
+                reload((prev) => !prev);
+              }}
+            >
+              <Typography sx={{ color: "#FFF" }}>Reload</Typography>
+            </Button>
           </Box>
         </Box>
       </Box>

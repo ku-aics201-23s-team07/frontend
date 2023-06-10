@@ -3,7 +3,7 @@ import axios from "axios";
 const serverUrl = "http://localhost:8000/";
 
 async function get(endpoint, params = "") {
-  return await axios.get(serverUrl + endpoint + "/" + params, {
+  return await axios.get(serverUrl + endpoint, {
     // Send jwt token in header
     headers: {
       // Authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
