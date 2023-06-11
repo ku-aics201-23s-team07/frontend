@@ -10,9 +10,7 @@ const { kakao } = window;
 
 export default function LandingPage() {
   const [icon, setIcon] = useState();
-  const [map, setMap] = useState();
   const [markerList, setMarkerList] = useState([]);
-  const [reloader, reload] = useState(true);
 
   // set sidebar items
   useEffect(() => {
@@ -97,7 +95,7 @@ export default function LandingPage() {
         />
         <Box sx={{ width: "100%", display: "flex" }}>
           <Sidebar />
-          <Box
+          <Button
             sx={{
               width: "80%",
               height: "calc(100%-40px)",
@@ -115,20 +113,8 @@ export default function LandingPage() {
                 borderRadius: 3,
               }}
             />
-            <Button
-              sx={{
-                position: "absolute",
-                right: 10,
-                bottom: 10,
-                backgroundColor: "#000",
-              }}
-              onClick={() => {
-                reload((prev) => !prev);
-              }}
-            >
-              <Typography sx={{ color: "#FFF" }}>Reload</Typography>
-            </Button>
-          </Box>
+            <Typography sx={{ color: "#FFF" }}>Reload</Typography>
+          </Button>
         </Box>
       </Box>
     </Box>

@@ -119,12 +119,16 @@ export default function SortPage() {
               <Button
                 sx={{ backgroundColor: "#FFF" }}
                 onClick={async () => {
-                  const res = await API.post("api/location/nearest", {
-                    latitude: selectedPosition.lat,
-                    longitude: selectedPosition.lon,
-                  });
+                  if (selectedPosition?.lat && selectedPosition?.lon) {
+                    const res = await API.post("api/location/nearest", {
+                      latitude: selectedPosition.lat,
+                      longitude: selectedPosition.lon,
+                    });
 
-                  setTargetPosition(res.data.message);
+                    setTargetPosition(res.data.message);
+                  } else {
+                    alert("No fixed selected Position");
+                  }
                 }}
               >
                 Search Nearest Scooter
