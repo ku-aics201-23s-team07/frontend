@@ -9,7 +9,6 @@ import * as API from "../api";
 const { kakao } = window;
 
 export default function LandingPage() {
-  const [icon, setIcon] = useState();
   const [markerList, setMarkerList] = useState([]);
 
   // set sidebar items
@@ -33,7 +32,7 @@ export default function LandingPage() {
 
     const icon = new kakao.maps.MarkerImage(
       "/kickboard-blackbg.png",
-      new kakao.maps.Size(33, 47),
+      new kakao.maps.Size(32, 46),
       {
         offset: new kakao.maps.Point(16, 34),
         alt: "킥보드",
@@ -41,47 +40,40 @@ export default function LandingPage() {
       }
     );
 
-    setIcon(icon);
-
     markerList.forEach((group) => {
-      const markerPosition = new kakao.maps.LatLng(
-        group.latitude ?? 33.450701,
-        group.longitude ?? 126.570667
-      );
-
-      //New Marker
-      const newMarker = new kakao.maps.Marker({
-        position: markerPosition,
-        image: icon,
+      // 지도에 표시할 원을 생성합니다
+      var circle = new kakao.maps.Circle({
+        center: new kakao.maps.LatLng(
+          group.latitude ?? 36.6105,
+          group.longitude ?? 127.287
+        ), // 원의 중심좌표 입니다
+        radius: 40, // 미터 단위의 원의 반지름입니다
+        strokeWeight: 3, // 선의 두께입니다
+        strokeColor: "#75A8FA", // 선의 색깔입니다
+        strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+        strokeStyle: "dashed", // 선의 스타일 입니다
+        fillColor: "lightgreen", // 채우기 색깔입니다
+        fillOpacity: 0.4, // 채우기 불투명도 입니다
       });
 
-      //Float the Marker
-      newMarker.setMap(map);
+      // 지도에 원을 표시합니다
+      circle.setMap(map);
 
-      // 커스텀 오버레이에 표시할 컨텐츠 입니다
-      // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
-      // 별도의 이벤트 메소드를 제공하지 않습니다
-      const content = `<div class="wrap">
-                        <div class="info">
-                          <div class="title" style="text-align: center">
-                            ${group.name}
-                          </div>
-                          <hr style="margin: 2px">
-                          <div class="title">
-                            스쿠터 갯수: ${group.scooters.length}
-                          </div>
-                        </div>
-                      </div>`;
+      group.scooters.forEach((scooter) => {
+        const newLat = group.latitude + 0.0005 * (0.5 - Math.random());
+        const newLon = group.longitude + 0.0005 * (0.5 - Math.random());
+        console.log(newLat, newLon);
+        const markerPosition = new kakao.maps.LatLng(newLat, newLon);
 
-      // 마커 위에 커스텀오버레이를 표시합니다
-      // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
-      var overlay = new kakao.maps.CustomOverlay({
-        content: content,
-        map: map,
-        position: newMarker.getPosition(),
+        // New Marker
+        const newMarker = new kakao.maps.Marker({
+          position: markerPosition,
+        });
+
+        // Float the Marker
+        newMarker.setMap(map);
       });
     });
-    console.log(markerList);
   }, [markerList]);
 
   return (
