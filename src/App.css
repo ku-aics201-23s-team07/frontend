@@ -44,3 +44,12 @@
   -webkit-backdrop-filter: blur(9.5px);
   border-radius: 10px;
 }
+
+.wrap {
+  background-color: #fff;
+  transform: translateY(25px);
+  padding: 2px;
+  border: 1px black solid;
+  border-radius: 3px;
+  z-index: 10;
+}
