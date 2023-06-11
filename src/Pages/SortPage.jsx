@@ -8,23 +8,12 @@ import * as API from "../api";
 
 const { kakao } = window;
 
-export default function LandingPage() {
-  const [icon, setIcon] = useState();
-  const [map, setMap] = useState();
+export default function SortPage() {
   const [markerList, setMarkerList] = useState([]);
-  const [reloader, reload] = useState(true);
+  const [selectedPosition, setSelectedPosition] = useState([]);
+  const [targetPosition, setTargetPosition] = useState([]);
 
-  // set sidebar items
-  useEffect(() => {
-    markerLoader();
-  }, []);
-
-  const markerLoader = async () => {
-    const res = await API.get("api/location/list");
-    setMarkerList(res.data.message);
-  };
-
-  useEffect(() => {
+  const mapDrawer = useCallback(() => {
     var mapContainer = document.getElementById("map"), // 지도를 표시할 div
       mapOption = {
         center: new kakao.maps.LatLng(36.6105, 127.287), // 지도의 중심좌표
@@ -34,6 +23,15 @@ export default function LandingPage() {
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
     const icon = new kakao.maps.MarkerImage(
+      "/selected.png",
+      new kakao.maps.Size(33, 36),
+      {
+        offset: new kakao.maps.Point(20, 20),
+        alt: "내위치",
+        shape: "poly",
+      }
+    );
+    const icon2 = new kakao.maps.MarkerImage(
       "/kickboard-blackbg.png",
       new kakao.maps.Size(33, 47),
       {
@@ -43,9 +41,7 @@ export default function LandingPage() {
       }
     );
 
-    setIcon(icon);
-
-    markerList.forEach((group) => {
+    markerList?.forEach((group) => {
       const markerPosition = new kakao.maps.LatLng(
         group.latitude ?? 33.450701,
         group.longitude ?? 126.570667
@@ -54,34 +50,37 @@ export default function LandingPage() {
       //New Marker
       const newMarker = new kakao.maps.Marker({
         position: markerPosition,
-        image: icon,
+        image: group.type === "me" ? icon : icon2,
       });
 
       //Float the Marker
       newMarker.setMap(map);
-
-      // 커스텀 오버레이에 표시할 컨텐츠 입니다
-      // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
-      // 별도의 이벤트 메소드를 제공하지 않습니다
-      var content =
-        '<div class="wrap">' +
-        '    <div class="info">' +
-        '        <div class="title">' +
-        group.name +
-        "        </div>" +
-        "    </div>" +
-        "</div>";
-
-      // 마커 위에 커스텀오버레이를 표시합니다
-      // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
-      var overlay = new kakao.maps.CustomOverlay({
-        content: content,
-        map: map,
-        position: newMarker.getPosition(),
-      });
     });
-    console.log(markerList);
-  }, [markerList]);
+
+    kakao.maps.event.addListener(map, "click", function (mouseEvent) {
+      const centerPosition = mouseEvent.latLng;
+      setSelectedPosition({ lat: centerPosition.Ma, lon: centerPosition.La });
+
+      setMarkerList([
+        {
+          name: "내 위치",
+          latitude: centerPosition.Ma,
+          longitude: centerPosition.La,
+          type: "me",
+        },
+        {
+          name: "가장 가까운 킥보드",
+          latitude: targetPosition?.location?.latitude,
+          longitude: targetPosition?.location?.longitude,
+          type: "target",
+        },
+      ]);
+    });
+  });
+
+  useEffect(() => {
+    mapDrawer();
+  }, [markerList, targetPosition]);
 
   return (
     <Box sx={{ ...styles.wrapper, ...styles.centerize }}>
@@ -101,8 +100,36 @@ export default function LandingPage() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              flexDirection: "column",
             }}
           >
+            <Box
+              sx={{
+                display: "flex",
+                width: "80%",
+                justifyContent: "space-between",
+                marginBottom: 2,
+                alignItems: "center",
+              }}
+            >
+              <Typography>
+                위도 {selectedPosition.lat ?? "선택되지 않음"} / 경도{" "}
+                {selectedPosition.lon ?? "선택되지 않음"}
+              </Typography>
+              <Button
+                sx={{ backgroundColor: "#FFF" }}
+                onClick={async () => {
+                  const res = await API.post("api/location/nearest", {
+                    latitude: selectedPosition.lat,
+                    longitude: selectedPosition.lon,
+                  });
+
+                  setTargetPosition(res.data.message);
+                }}
+              >
+                Search Nearest Scooter
+              </Button>
+            </Box>
             <div
               id="map"
               style={{
@@ -112,19 +139,6 @@ export default function LandingPage() {
                 borderRadius: 3,
               }}
             />
-            <Button
-              sx={{
-                position: "absolute",
-                right: 10,
-                bottom: 10,
-                backgroundColor: "#000",
-              }}
-              onClick={() => {
-                reload((prev) => !prev);
-              }}
-            >
-              <Typography sx={{ color: "#FFF" }}>Reload</Typography>
-            </Button>
           </Box>
         </Box>
       </Box>
