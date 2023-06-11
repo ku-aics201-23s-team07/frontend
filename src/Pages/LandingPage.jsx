@@ -63,14 +63,17 @@ export default function LandingPage() {
       // 커스텀 오버레이에 표시할 컨텐츠 입니다
       // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
       // 별도의 이벤트 메소드를 제공하지 않습니다
-      var content =
-        '<div class="wrap">' +
-        '    <div class="info">' +
-        '        <div class="title">' +
-        group.name +
-        "        </div>" +
-        "    </div>" +
-        "</div>";
+      const content = `<div class="wrap">
+                        <div class="info">
+                          <div class="title" style="text-align: center">
+                            ${group.name}
+                          </div>
+                          <hr style="margin: 2px">
+                          <div class="title">
+                            스쿠터 갯수: ${group.scooters.length}
+                          </div>
+                        </div>
+                      </div>`;
 
       // 마커 위에 커스텀오버레이를 표시합니다
       // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
