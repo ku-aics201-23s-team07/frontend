@@ -12,6 +12,7 @@ export default function SortPage() {
   const [markerList, setMarkerList] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState([]);
   const [targetPosition, setTargetPosition] = useState([]);
+  const [targetScooter, setTargetScooter] = useState([]);
 
   const mapDrawer = useCallback(() => {
     var mapContainer = document.getElementById("map"), // 지도를 표시할 div
@@ -31,30 +32,65 @@ export default function SortPage() {
         shape: "poly",
       }
     );
-    const icon2 = new kakao.maps.MarkerImage(
-      "/kickboard-blackbg.png",
-      new kakao.maps.Size(33, 47),
-      {
-        offset: new kakao.maps.Point(16, 34),
-        alt: "킥보드",
-        shape: "poly",
-      }
-    );
 
     markerList?.forEach((group) => {
-      const markerPosition = new kakao.maps.LatLng(
-        group.latitude ?? 33.450701,
-        group.longitude ?? 126.570667
-      );
+      if (group.type === "me") {
+        const markerPosition = new kakao.maps.LatLng(
+          group.latitude ?? 33.450701,
+          group.longitude ?? 126.570667
+        );
 
-      //New Marker
-      const newMarker = new kakao.maps.Marker({
-        position: markerPosition,
-        image: group.type === "me" ? icon : icon2,
-      });
+        const newMarker = new kakao.maps.Marker({
+          position: markerPosition,
+          image: icon,
+        });
 
-      //Float the Marker
-      newMarker.setMap(map);
+        newMarker.setMap(map);
+      } else if (group.type === "scooter") {
+        const markerPosition = new kakao.maps.LatLng(
+          group.latitude ?? 33.450701,
+          group.longitude ?? 126.570667
+        );
+
+        const newMarker = new kakao.maps.Marker({
+          position: markerPosition,
+        });
+
+        newMarker.setMap(map);
+
+        const iwContent =
+          "<div style='width: 200px; padding: 5px; display: flex; justify-content: center'>" +
+          group.scooterId +
+          "번 스쿠터 | " +
+          group.battery +
+          "%</div>";
+        const iwPosition = new kakao.maps.LatLng(33.450701, 126.570667); //인포윈도우 표시 위치입니다
+
+        // 인포윈도우를 생성합니다
+        const infowindow = new kakao.maps.InfoWindow({
+          position: iwPosition,
+          content: iwContent,
+        });
+
+        // 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
+        infowindow.open(map, newMarker);
+      } else {
+        var circle = new kakao.maps.Circle({
+          center: new kakao.maps.LatLng(
+            group.latitude ?? 36.6105,
+            group.longitude ?? 127.287
+          ), // 원의 중심좌표 입니다
+          radius: 40, // 미터 단위의 원의 반지름입니다
+          strokeWeight: 3, // 선의 두께입니다
+          strokeColor: "#75A8FA", // 선의 색깔입니다
+          strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+          strokeStyle: "dashed", // 선의 스타일 입니다
+          fillColor: "lightgreen", // 채우기 색깔입니다
+          fillOpacity: 0.4, // 채우기 불투명도 입니다
+        });
+
+        circle.setMap(map);
+      }
     });
 
     kakao.maps.event.addListener(map, "click", function (mouseEvent) {
@@ -69,10 +105,21 @@ export default function SortPage() {
           type: "me",
         },
         {
-          name: "가장 가까운 킥보드",
+          name: "가장 가까운 킥보드 구역",
           latitude: targetPosition?.location?.latitude,
           longitude: targetPosition?.location?.longitude,
           type: "target",
+        },
+        {
+          name: "가용 킥보드",
+          type: "scooter",
+          scooterId: targetScooter?.id,
+          battery: targetScooter?.battery,
+          latitude:
+            targetPosition?.location?.latitude + 0.0005 * (0.5 - Math.random()),
+          longitude:
+            targetPosition?.location?.longitude +
+            0.0005 * (0.5 - Math.random()),
         },
       ]);
     });
@@ -81,6 +128,10 @@ export default function SortPage() {
   useEffect(() => {
     mapDrawer();
   }, [markerList, targetPosition]);
+
+  useEffect(() => {
+    console.log(targetScooter);
+  }, [targetScooter]);
 
   return (
     <Box sx={{ ...styles.wrapper, ...styles.centerize }}>
@@ -126,6 +177,12 @@ export default function SortPage() {
                     });
 
                     setTargetPosition(res.data.message);
+
+                    const scooRes = await API.post("api/scooter/good", {
+                      locationId: res.data.message.locationId,
+                    });
+
+                    setTargetScooter(scooRes.data.message);
                   } else {
                     alert("No fixed selected Position");
                   }

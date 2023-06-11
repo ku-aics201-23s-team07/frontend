@@ -30,16 +30,6 @@ export default function LandingPage() {
 
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
-    const icon = new kakao.maps.MarkerImage(
-      "/kickboard-blackbg.png",
-      new kakao.maps.Size(32, 46),
-      {
-        offset: new kakao.maps.Point(16, 34),
-        alt: "킥보드",
-        shape: "poly",
-      }
-    );
-
     markerList.forEach((group) => {
       // 지도에 표시할 원을 생성합니다
       var circle = new kakao.maps.Circle({
