@@ -13,9 +13,8 @@ async function get(endpoint, params = "") {
 
 // post method request with JSON.stringify()
 async function post(endpoint, data) {
-  const bodyData = JSON.stringify(data);
 
-  return axios.post(serverUrl + endpoint, bodyData, {
+  return axios.post(serverUrl + endpoint, data, {
     headers: {
       "Content-Type": "application/json",
       // Authorization: `Bearer ${sessionStorage.getItem("userToken")}`,
@@ -34,8 +33,6 @@ async function postData(endpoint, data) {
 
 // put method request with JSON.stringify()
 async function put(endpoint, data) {
-  const bodyData = JSON.stringify(data);
-
   return axios.put(serverUrl + endpoint, bodyData, {
     headers: {
       "Content-Type": "application/json",
