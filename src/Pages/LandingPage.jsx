@@ -95,7 +95,7 @@ export default function LandingPage() {
         />
         <Box sx={{ width: "100%", display: "flex" }}>
           <Sidebar />
-          <Button
+          <Box
             sx={{
               width: "80%",
               height: "calc(100%-40px)",
@@ -113,8 +113,7 @@ export default function LandingPage() {
                 borderRadius: 3,
               }}
             />
-            <Typography sx={{ color: "#FFF" }}>Reload</Typography>
-          </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
